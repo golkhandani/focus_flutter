@@ -1,6 +1,6 @@
-import 'package:app/counter/bloc/counter_bloc.dart';
-import 'package:app/counter/bloc/counter_state.dart';
-import 'package:app/counter/bloc/counter_event.dart';
+import 'package:app/components/counter/bloc/counter_bloc.dart';
+import 'package:app/components/counter/bloc/counter_state.dart';
+import 'package:app/components/counter/bloc/counter_event.dart';
 
 import 'package:app/locator.dart';
 import 'package:flutter/material.dart';
@@ -31,50 +31,36 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+class HomePage extends StatelessWidget {
+  const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final bloc = locator.get<CounterBloc>();
-
-  @override
   Widget build(BuildContext context) {
+    final _bloc = locator.get<CounterBloc>();
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
             BlocBuilder<CounterBloc, CounterState>(
-              bloc: bloc,
+              bloc: _bloc,
+              buildWhen: (p, c) => p.isLoading != c.isLoading,
               builder: (context, state) {
-                print("state chnage: $state");
                 if (state.isLoading == true) {
-                  return const CircularProgressIndicator(
-                    semanticsLabel: 'Circular progress indicator',
-                  );
+                  return const LoadingIndicator();
                 } else {
                   return Text(
                     state.count.toString(),
@@ -82,9 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }
               },
-            ),
-            const Text(
-              'You have pushed the button this many times:',
             ),
           ],
         ),
@@ -94,18 +77,31 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () => bloc.add(const CounterEvent.increase()),
+            onPressed: () => _bloc.add(const CounterEvent.increase()),
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
-            onPressed: () => bloc.add(const CounterEvent.decrease()),
+            onPressed: () => _bloc.add(const CounterEvent.decrease()),
             tooltip: 'Decrement',
             child: const Icon(Icons.remove),
           )
         ],
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const CircularProgressIndicator(
+      semanticsLabel: 'Circular progress indicator',
     );
   }
 }
