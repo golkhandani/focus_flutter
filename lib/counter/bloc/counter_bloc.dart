@@ -6,12 +6,12 @@ import 'package:bloc/bloc.dart';
 
 class CounterBloc extends Bloc<CounterEvent, CounterState> {
   CounterBloc() : super(CounterState.initial()) {
-    on<CounterEvent>((event, emit) async {
-      await event.when(
-        increase: () => _increase(emit),
-        decrease: () => _decrease(emit),
-      );
-    });
+    // note if you don't mention Future<void> it wont detect that should
+    // act async on function implementations
+    on<CounterEvent>((event, emit) => event.when<Future<void>>(
+          increase: () => _increase(emit),
+          decrease: () => _decrease(emit),
+        ));
   }
   _increase(emit) async {
     emit(state.copyWith(isLoading: true));
