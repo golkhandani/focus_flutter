@@ -1,10 +1,13 @@
+import 'package:app/components/category/category_list/page.dart';
 import 'package:app/components/counter/bloc/counter_bloc.dart';
 import 'package:app/components/counter/bloc/counter_state.dart';
 import 'package:app/components/counter/bloc/counter_event.dart';
+import 'package:app/components/login/page.dart';
 
 import 'package:app/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   setup();
@@ -20,30 +23,28 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
+        fontFamily: GoogleFonts.montserrat().fontFamily,
       ),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: LoginPage.routeName,
+      routes: {
+        HomePage.routeName: (context) => const HomePage(title: 'Flutter'),
+        LoginPage.routeName: (context) => const LoginPage(),
+        CategoryListPage.routeName: (context) => const CategoryListPage()
+      },
     );
   }
 }
 
 class HomePage extends StatelessWidget {
+  static const routeName = "HomePage";
   const HomePage({super.key, required this.title});
 
   final String title;
 
   @override
   Widget build(BuildContext context) {
-    final _bloc = locator.get<CounterBloc>();
+    final bloc = locator.get<CounterBloc>();
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -56,7 +57,7 @@ class HomePage extends StatelessWidget {
               'You have pushed the button this many times:',
             ),
             BlocBuilder<CounterBloc, CounterState>(
-              bloc: _bloc,
+              bloc: bloc,
               buildWhen: (p, c) => p.isLoading != c.isLoading,
               builder: (context, state) {
                 if (state.isLoading == true) {
@@ -77,13 +78,13 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () => _bloc.add(const CounterEvent.increase()),
+            onPressed: () => bloc.add(const CounterEvent.increase()),
             tooltip: 'Increment',
             child: const Icon(Icons.add),
           ),
           const SizedBox(height: 10),
           FloatingActionButton(
-            onPressed: () => _bloc.add(const CounterEvent.decrease()),
+            onPressed: () => bloc.add(const CounterEvent.decrease()),
             tooltip: 'Decrement',
             child: const Icon(Icons.remove),
           )
