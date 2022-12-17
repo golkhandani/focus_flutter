@@ -1,3 +1,4 @@
+import 'package:app/components/authentication/page.dart';
 import 'package:app/components/category/category_list/page.dart';
 import 'package:app/components/counter/bloc/counter_bloc.dart';
 import 'package:app/components/counter/bloc/counter_state.dart';
@@ -10,24 +11,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() {
-  setup();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late GlobalKey<NavigatorState> _globalKey;
+  late GlobalNavigator _globalNavigator;
+
+  @override
+  void initState() {
+    super.initState();
+    _globalKey = GlobalKey<NavigatorState>();
+    _globalNavigator = GlobalNavigator(navigatorKey: _globalKey);
+    setupLocator(globalNavigator: _globalNavigator);
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _globalKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: GoogleFonts.montserrat().fontFamily,
       ),
-      initialRoute: LoginPage.routeName,
+      initialRoute: AuthenticationPage.routeName,
       routes: {
+        AuthenticationPage.routeName: (context) => const AuthenticationPage(),
         HomePage.routeName: (context) => const HomePage(title: 'Flutter'),
         LoginPage.routeName: (context) => const LoginPage(),
         CategoryListPage.routeName: (context) => const CategoryListPage()

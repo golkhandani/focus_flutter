@@ -4,7 +4,8 @@ mixin TranslationText {
 
 enum LoginText with TranslationText {
   loginBtn('login'),
-  ;
+  enterUsername('Enter your username'),
+  enterPassword('Enter your password');
 
   final String id;
   const LoginText(this.id);
